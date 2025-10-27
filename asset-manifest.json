@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/PromptSaver/static/css/main.e6c13ad2.css",
+    "main.js": "/PromptSaver/static/js/main.89eee4ad.js",
+    "static/js/453.042f6385.chunk.js": "/PromptSaver/static/js/453.042f6385.chunk.js",
+    "index.html": "/PromptSaver/index.html",
+    "main.e6c13ad2.css.map": "/PromptSaver/static/css/main.e6c13ad2.css.map",
+    "main.89eee4ad.js.map": "/PromptSaver/static/js/main.89eee4ad.js.map",
+    "453.042f6385.chunk.js.map": "/PromptSaver/static/js/453.042f6385.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.89eee4ad.js"
+  ]
+}
