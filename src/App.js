@@ -83,155 +83,143 @@ export default function PromptBuilder() {
   ];
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      <div className="bg-white border-b border-gray-200 shadow-md px-6 py-4 flex items-center justify-between">
-        <div className="text-2xl font-bold text-blue-600">promptsav</div>
-        <a href="https://github.com/nafisadman/promptsav" target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-semibold">GitHub</a>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#f3f4f6', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+      <div style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#2563eb' }}>promptsav</div>
+        <a href="https://github.com/nafisadman/promptsav" target="_blank" rel="noopener noreferrer" style={{ padding: '8px 16px', backgroundColor: '#111827', color: '#ffffff', borderRadius: '8px', fontWeight: '600', textDecoration: 'none', cursor: 'pointer' }}>GitHub</a>
       </div>
 
-      <div className="flex-1 flex overflow-hidden">
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         {showSidebar && (
-          <div className="w-72 bg-white border-r border-gray-200 overflow-y-auto shadow-xl">
-            <div className="p-6 sticky top-0 bg-white border-b border-gray-200">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Saved</h3>
-              <div className="flex gap-2">
-                <button onClick={handleExportItems} disabled={savedItems.length === 0} className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white text-sm font-semibold rounded-lg transition-colors">
-                  <Download size={16} /> Export
-                </button>
-                <button onClick={handleImportItems} className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                  <Upload size={16} /> Import
-                </button>
+          <div style={{ width: '288px', backgroundColor: '#ffffff', borderRight: '1px solid #e5e7eb', overflowY: 'auto', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+            <div style={{ padding: '24px', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, backgroundColor: '#ffffff' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: '#111827', marginBottom: '16px' }}>Saved</h3>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button onClick={handleExportItems} disabled={savedItems.length === 0} style={{ flex: 1, padding: '8px 12px', backgroundColor: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', fontSize: '12px', opacity: savedItems.length === 0 ? 0.5 : 1 }}>Export</button>
+                <button onClick={handleImportItems} style={{ flex: 1, padding: '8px 12px', backgroundColor: '#059669', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', fontSize: '12px' }}>Import</button>
               </div>
             </div>
-            <div className="p-4 space-y-3">
-              {savedItems.length === 0 && <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">No saved items</div>}
+            <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {savedItems.length === 0 && <div style={{ padding: '16px', backgroundColor: '#dbeafe', border: '1px solid #7dd3fc', borderRadius: '8px', fontSize: '12px', color: '#0369a1' }}>No saved items</div>}
               {savedItems.map(item => (
-                <div key={item.id} className="p-3 bg-gray-50 border border-gray-200 rounded-lg hover:shadow-lg transition-shadow">
+                <div key={item.id} style={{ padding: '12px', backgroundColor: '#f3f4f6', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
                   {editingItemName === item.id ? (
-                    <div className="flex gap-2 mb-2">
-                      <input type="text" value={editingItemValue} onChange={(e) => setEditingItemValue(e.target.value)} className="flex-1 px-2 py-1 border border-blue-500 rounded text-sm" autoFocus />
-                      <button onClick={() => { handleRenameSavedItem(item.id, editingItemValue); setEditingItemName(null); }} className="px-2 py-1 bg-emerald-600 text-white text-xs rounded font-semibold">OK</button>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                      <input type="text" value={editingItemValue} onChange={(e) => setEditingItemValue(e.target.value)} style={{ flex: 1, padding: '6px 8px', border: '1px solid #2563eb', borderRadius: '4px', fontSize: '12px' }} autoFocus />
+                      <button onClick={() => { handleRenameSavedItem(item.id, editingItemValue); setEditingItemName(null); }} style={{ padding: '6px 8px', backgroundColor: '#059669', color: '#ffffff', border: 'none', borderRadius: '4px', fontWeight: '600', fontSize: '12px', cursor: 'pointer' }}>OK</button>
                     </div>
                   ) : (
-                    <h3 onDoubleClick={() => { setEditingItemName(item.id); setEditingItemValue(item.name); }} className="font-bold text-gray-900 cursor-pointer hover:text-blue-600 mb-1">{item.name}</h3>
+                    <h3 onDoubleClick={() => { setEditingItemName(item.id); setEditingItemValue(item.name); }} style={{ fontWeight: 'bold', color: '#111827', cursor: 'pointer', marginBottom: '4px' }}>{item.name}</h3>
                   )}
-                  <p className="text-xs text-gray-600 truncate mb-2">{item.prompt.substring(0, 50)}...</p>
-                  <div className="flex gap-2">
-                    <button onClick={() => handleLoadPrompt(item.id)} className="flex-1 px-2 py-1 bg-blue-600 text-white text-xs rounded font-semibold">Load</button>
-                    <button onClick={() => handleDeleteSavedItem(item.id)} className="px-2 py-1 bg-red-100 text-red-600 text-xs rounded font-semibold">X</button>
+                  <p style={{ fontSize: '11px', color: '#6b7280', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '8px' }}>{item.prompt.substring(0, 50)}...</p>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button onClick={() => handleLoadPrompt(item.id)} style={{ flex: 1, padding: '4px 8px', backgroundColor: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '4px', fontWeight: '600', fontSize: '11px', cursor: 'pointer' }}>Load</button>
+                    <button onClick={() => handleDeleteSavedItem(item.id)} style={{ padding: '4px 8px', backgroundColor: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '4px', fontWeight: '600', fontSize: '11px', cursor: 'pointer' }}>X</button>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="p-4 border-t border-gray-200">
-              <button onClick={() => setShowSidebar(false)} className="w-full px-3 py-2 bg-gray-200 text-gray-700 text-sm font-semibold rounded-lg">Hide</button>
+            <div style={{ padding: '16px', borderTop: '1px solid #e5e7eb' }}>
+              <button onClick={() => setShowSidebar(false)} style={{ width: '100%', padding: '8px 12px', backgroundColor: '#d1d5db', color: '#374151', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '12px', cursor: 'pointer' }}>Hide</button>
             </div>
           </div>
         )}
 
         {!showSidebar && (
-          <button onClick={() => setShowSidebar(true)} className="fixed left-4 top-20 z-50 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg shadow-lg">Show</button>
+          <button onClick={() => setShowSidebar(true)} style={{ position: 'fixed', left: '16px', top: '80px', zIndex: 50, padding: '8px 16px', backgroundColor: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '12px', cursor: 'pointer', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>Show</button>
         )}
 
-        <div className="flex-1 flex gap-4 p-4 overflow-hidden">
-          <div className="flex-1 bg-white rounded-xl shadow-lg border border-gray-200 flex flex-col overflow-hidden">
-            <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-              <h1 className="text-2xl font-bold text-gray-900">Input</h1>
+        <div style={{ display: 'flex', flex: 1, gap: '16px', padding: '16px', overflow: 'hidden' }}>
+          <div style={{ flex: 1, backgroundColor: '#ffffff', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', border: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div style={{ padding: '16px', borderBottom: '1px solid #e5e7eb', background: 'linear-gradient(to right, #eff6ff, #e0e7ff)' }}>
+              <h1 style={{ fontSize: '20px', fontWeight: 'bold', color: '#111827', margin: 0 }}>Input</h1>
             </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {inputFields.map(field => {
                 const isDeleted = deletedFields.has(field.key);
                 const isHidden = hiddenFields.has(field.key);
                 if (isDeleted) return null;
                 return (
-                  <div key={field.key} onMouseEnter={() => setHoverField(field.key)} onMouseLeave={() => setHoverField(null)} className="space-y-1">
-                    <div className="flex items-center justify-between">
+                  <div key={field.key} onMouseEnter={() => setHoverField(field.key)} onMouseLeave={() => setHoverField(null)} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       {editingLabel === field.key ? (
-                        <div className="flex gap-2 flex-1">
-                          <input type="text" value={editValue} onChange={(e) => setEditValue(e.target.value)} className="flex-1 px-3 py-1 border border-blue-500 rounded text-sm" autoFocus />
-                          <button onClick={() => { setLabels(prev => ({ ...prev, [field.key]: editValue })); setEditingLabel(null); }} className="px-3 py-1 bg-emerald-600 text-white text-xs rounded font-semibold">Save</button>
-                          <button onClick={() => setEditingLabel(null)} className="px-3 py-1 bg-red-600 text-white text-xs rounded font-semibold">Cancel</button>
+                        <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
+                          <input type="text" value={editValue} onChange={(e) => setEditValue(e.target.value)} style={{ flex: 1, padding: '6px 12px', border: '1px solid #2563eb', borderRadius: '6px', fontSize: '12px' }} autoFocus />
+                          <button onClick={() => { setLabels(prev => ({ ...prev, [field.key]: editValue })); setEditingLabel(null); }} style={{ padding: '6px 12px', backgroundColor: '#059669', color: '#ffffff', border: 'none', borderRadius: '6px', fontWeight: '600', fontSize: '12px', cursor: 'pointer' }}>Save</button>
+                          <button onClick={() => setEditingLabel(null)} style={{ padding: '6px 12px', backgroundColor: '#dc2626', color: '#ffffff', border: 'none', borderRadius: '6px', fontWeight: '600', fontSize: '12px', cursor: 'pointer' }}>Cancel</button>
                         </div>
                       ) : (
                         <>
-                          <label onDoubleClick={() => { setEditingLabel(field.key); setEditValue(labels[field.key]); }} className={`text-sm font-semibold cursor-pointer ${isHidden ? 'text-gray-400' : 'text-gray-900'}`}>{labels[field.key]}</label>
+                          <label onDoubleClick={() => { setEditingLabel(field.key); setEditValue(labels[field.key]); }} style={{ fontSize: '12px', fontWeight: '600', cursor: 'pointer', color: isHidden ? '#d1d5db' : '#111827' }}>{labels[field.key]}</label>
                           {!isHidden && (
-                            <div className={`flex gap-1 transition-opacity ${hoverField === field.key ? 'opacity-100' : 'opacity-0'}`}>
-                              <button onClick={() => handleCopyField(field.key)} disabled={!inputs[field.key]} className="p-1 hover:bg-gray-100 rounded" title="Copy">
-                                {copiedField === field.key ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
-                              </button>
-                              <button onClick={() => handleHideField(field.key)} className="p-1 hover:bg-gray-100 rounded" title="Hide">
-                                <EyeOff size={14} />
-                              </button>
-                              <button onClick={() => handleDeleteField(field.key)} className="p-1 hover:bg-red-50 rounded" title="Delete">
-                                <Trash2 size={14} className="text-red-600" />
-                              </button>
+                            <div style={{ display: 'flex', gap: '4px', opacity: hoverField === field.key ? 1 : 0, transition: 'opacity 0.2s' }}>
+                              <button onClick={() => handleCopyField(field.key)} disabled={!inputs[field.key]} style={{ padding: '4px 4px', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }} title="Copy">{copiedField === field.key ? <Check size={14} color="#059669" /> : <Copy size={14} />}</button>
+                              <button onClick={() => handleHideField(field.key)} style={{ padding: '4px 4px', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }} title="Hide"><EyeOff size={14} /></button>
+                              <button onClick={() => handleDeleteField(field.key)} style={{ padding: '4px 4px', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }} title="Delete"><Trash2 size={14} color="#dc2626" /></button>
                             </div>
                           )}
                           {isHidden && (
-                            <button onClick={() => handleShowField(field.key)} className="p-1 hover:bg-gray-100 rounded">
-                              <Eye size={14} />
-                            </button>
+                            <button onClick={() => handleShowField(field.key)} style={{ padding: '4px 4px', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}><Eye size={14} /></button>
                           )}
                         </>
                       )}
                     </div>
-                    <textarea disabled={isHidden} value={inputs[field.key]} onChange={(e) => { handleInputChange(field.key, e.target.value); e.target.style.height = 'auto'; e.target.style.height = Math.min(e.target.scrollHeight, 300) + 'px'; }} placeholder={field.placeholder} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" style={{ backgroundColor: colors[field.key], opacity: isHidden ? 0.5 : 1, cursor: isHidden ? 'not-allowed' : 'auto', minHeight: '40px', maxHeight: '300px', overflow: 'hidden' }} rows="1" />
+                    <textarea disabled={isHidden} value={inputs[field.key]} onChange={(e) => { handleInputChange(field.key, e.target.value); e.target.style.height = 'auto'; e.target.style.height = Math.min(e.target.scrollHeight, 300) + 'px'; }} placeholder={field.placeholder} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px', fontFamily: 'system-ui', resize: 'none', backgroundColor: colors[field.key], opacity: isHidden ? 0.5 : 1, cursor: isHidden ? 'not-allowed' : 'auto', minHeight: '40px', maxHeight: '300px', overflow: 'hidden', boxSizing: 'border-box' }} rows="1" />
                   </div>
                 );
               })}
             </div>
-            <div className="p-4 border-t border-gray-200 bg-gray-50">
-              <button onClick={handleSavePrompt} className="w-full px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg">Save</button>
+            <div style={{ padding: '16px', borderTop: '1px solid #e5e7eb', backgroundColor: '#f9fafb' }}>
+              <button onClick={handleSavePrompt} style={{ width: '100%', padding: '10px 16px', backgroundColor: '#059669', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer' }}>Save</button>
             </div>
           </div>
 
-          <div className="flex-1 bg-white rounded-xl shadow-lg border border-gray-200 flex flex-col overflow-hidden">
-            <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50 flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-900">Output</h2>
-              <button onClick={handleCopyOutput} className="flex items-center gap-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-sm">
-                {copied ? (<><Check size={16} /> Copied!</>) : (<><Copy size={16} /> Copy</>)}
+          <div style={{ flex: 1, backgroundColor: '#ffffff', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', border: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div style={{ padding: '16px', borderBottom: '1px solid #e5e7eb', background: 'linear-gradient(to right, #faf5ff, #fce7f3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#111827', margin: 0 }}>Output</h2>
+              <button onClick={handleCopyOutput} style={{ padding: '6px 12px', backgroundColor: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '12px', cursor: 'pointer' }}>
+                {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy</>}
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {generateColoredPrompt().length === 0 ? (
-                <div className="h-full flex items-center justify-center p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">Your prompt will appear here...</div>
+                <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', backgroundColor: '#dbeafe', border: '1px solid #7dd3fc', borderRadius: '8px', fontSize: '12px', color: '#0369a1' }}>Your prompt will appear here...</div>
               ) : (
                 generateColoredPrompt().map((section, idx) => {
                   const isEditing = editingOutputField === section.key;
                   return (
-                    <div key={idx} onClick={() => handleEditOutput(section.key, section.text)} className={`p-3 rounded-lg cursor-pointer transition-all text-sm ${isEditing ? 'ring-2 ring-blue-500 shadow-lg' : 'hover:shadow-md'}`} style={{ backgroundColor: colors[section.key] }}>
+                    <div key={idx} onClick={() => handleEditOutput(section.key, section.text)} style={{ padding: '12px', borderRadius: '8px', cursor: 'pointer', backgroundColor: colors[section.key], border: isEditing ? '2px solid #2563eb' : '1px solid transparent', fontSize: '12px' }}>
                       {isEditing ? (
-                        <div className="space-y-2">
-                          <textarea value={editingOutputValue} onChange={(e) => setEditingOutputValue(e.target.value)} className="w-full px-2 py-1 border border-blue-400 rounded text-xs font-mono focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none" style={{ minHeight: '100px' }} autoFocus />
-                          <div className="flex gap-2">
-                            <button onClick={(e) => { e.stopPropagation(); handleSaveOutputEdit(section.key); }} className="flex-1 px-2 py-1 bg-emerald-600 text-white text-xs rounded font-semibold">Save</button>
-                            <button onClick={(e) => { e.stopPropagation(); setEditingOutputField(null); }} className="flex-1 px-2 py-1 bg-red-600 text-white text-xs rounded font-semibold">Cancel</button>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <textarea value={editingOutputValue} onChange={(e) => setEditingOutputValue(e.target.value)} style={{ width: '100%', padding: '8px', border: '1px solid #2563eb', borderRadius: '4px', fontSize: '11px', fontFamily: 'monospace', minHeight: '100px', boxSizing: 'border-box' }} autoFocus />
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <button onClick={(e) => { e.stopPropagation(); handleSaveOutputEdit(section.key); }} style={{ flex: 1, padding: '6px 12px', backgroundColor: '#059669', color: '#ffffff', border: 'none', borderRadius: '4px', fontWeight: '600', fontSize: '12px', cursor: 'pointer' }}>Save</button>
+                            <button onClick={(e) => { e.stopPropagation(); setEditingOutputField(null); }} style={{ flex: 1, padding: '6px 12px', backgroundColor: '#dc2626', color: '#ffffff', border: 'none', borderRadius: '4px', fontWeight: '600', fontSize: '12px', cursor: 'pointer' }}>Cancel</button>
                           </div>
                         </div>
                       ) : (
-                        <p className="text-gray-800 font-mono whitespace-pre-wrap break-words">{section.text}</p>
+                        <p style={{ margin: 0, fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#1f2937' }}>{section.text}</p>
                       )}
                     </div>
                   );
                 })
               )}
             </div>
-            <div className="p-4 border-t border-gray-200 bg-gray-50 flex gap-2 justify-center flex-wrap">
-              <a href={`https://chatgpt.com/?q=${encodeURIComponent(generatePrompt())}`} target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded-lg font-semibold">ChatGPT</a>
-              <a href={`https://gemini.google.com/?q=${encodeURIComponent(generatePrompt())}`} target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs rounded-lg font-semibold">Gemini</a>
-              <a href={`https://claude.ai/?q=${encodeURIComponent(generatePrompt())}`} target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-xs rounded-lg font-semibold">Claude</a>
-              <a href={`https://grok.x.com/?q=${encodeURIComponent(generatePrompt())}`} target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-black hover:bg-gray-800 text-white text-xs rounded-lg font-semibold">Grok</a>
+            <div style={{ padding: '16px', borderTop: '1px solid #e5e7eb', backgroundColor: '#f9fafb', display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <a href={`https://chatgpt.com/?q=${encodeURIComponent(generatePrompt())}`} target="_blank" rel="noopener noreferrer" style={{ padding: '6px 12px', backgroundColor: '#16a34a', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '11px', textDecoration: 'none', cursor: 'pointer' }}>ChatGPT</a>
+              <a href={`https://gemini.google.com/?q=${encodeURIComponent(generatePrompt())}`} target="_blank" rel="noopener noreferrer" style={{ padding: '6px 12px', backgroundColor: '#3b82f6', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '11px', textDecoration: 'none', cursor: 'pointer' }}>Gemini</a>
+              <a href={`https://claude.ai/?q=${encodeURIComponent(generatePrompt())}`} target="_blank" rel="noopener noreferrer" style={{ padding: '6px 12px', backgroundColor: '#9333ea', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '11px', textDecoration: 'none', cursor: 'pointer' }}>Claude</a>
+              <a href={`https://grok.x.com/?q=${encodeURIComponent(generatePrompt())}`} target="_blank" rel="noopener noreferrer" style={{ padding: '6px 12px', backgroundColor: '#000000', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '11px', textDecoration: 'none', cursor: 'pointer' }}>Grok</a>
             </div>
           </div>
         </div>
       </div>
 
       {toast && (
-        <div className="fixed bottom-6 right-6 bg-white rounded-lg shadow-xl border border-gray-200 p-4 flex items-center gap-4 z-50 max-w-sm">
-          <span className="text-sm font-medium text-gray-900">{labels[toast]} deleted</span>
-          <button onClick={() => { handleRestoreField(toast); setToast(null); }} className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded font-semibold whitespace-nowrap">Restore</button>
-          <button onClick={() => setToast(null)} className="text-gray-500 hover:text-gray-700 text-lg">X</button>
+        <div style={{ position: 'fixed', bottom: '24px', right: '24px', backgroundColor: '#ffffff', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', border: '1px solid #e5e7eb', padding: '16px', display: 'flex', alignItems: 'center', gap: '16px', zIndex: 50, maxWidth: '400px' }}>
+          <span style={{ fontSize: '12px', fontWeight: '500', color: '#111827' }}>{labels[toast]} deleted</span>
+          <button onClick={() => { handleRestoreField(toast); setToast(null); }} style={{ padding: '6px 12px', backgroundColor: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '4px', fontWeight: '600', fontSize: '12px', cursor: 'pointer', whiteSpace: 'nowrap' }}>Restore</button>
+          <button onClick={() => setToast(null)} style={{ padding: 0, backgroundColor: 'transparent', color: '#6b7280', border: 'none', cursor: 'pointer', fontSize: '18px' }}>X</button>
         </div>
       )}
     </div>
