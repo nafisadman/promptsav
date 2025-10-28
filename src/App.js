@@ -1,33 +1,9 @@
 import React, { useState } from 'react';
-import { Copy, Check, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Copy, Check, Trash2, Eye, EyeOff, Download, Upload } from 'lucide-react';
 
 export default function PromptBuilder() {
-  const [inputs, setInputs] = useState({
-    taskContext: '',
-    toneContext: '',
-    backgroundData: '',
-    taskDescription: '',
-    examples: '',
-    conversationHistory: '',
-    immediateTask: '',
-    thinkingSteps: '',
-    outputFormatting: '',
-    prefilledResponse: ''
-  });
-
-  const [labels, setLabels] = useState({
-    taskContext: 'Task Context',
-    toneContext: 'Tone Context',
-    backgroundData: 'Background Data, Documents & Images',
-    taskDescription: 'Detailed Task Description & Rules',
-    examples: 'Examples',
-    conversationHistory: 'Conversation History',
-    immediateTask: 'Immediate Task Description',
-    thinkingSteps: 'Thinking Steps / Take a Deep Breath',
-    outputFormatting: 'Output Formatting',
-    prefilledResponse: 'Prefilled Response (If Any)'
-  });
-
+  const [inputs, setInputs] = useState({ taskContext: '', toneContext: '', backgroundData: '', taskDescription: '', examples: '', conversationHistory: '', immediateTask: '', thinkingSteps: '', outputFormatting: '', prefilledResponse: '' });
+  const [labels, setLabels] = useState({ taskContext: 'Task Context', toneContext: 'Tone Context', backgroundData: 'Background Data, Documents & Images', taskDescription: 'Detailed Task Description & Rules', examples: 'Examples', conversationHistory: 'Conversation History', immediateTask: 'Immediate Task Description', thinkingSteps: 'Thinking Steps / Take a Deep Breath', outputFormatting: 'Output Formatting', prefilledResponse: 'Prefilled Response (If Any)' });
   const [editingLabel, setEditingLabel] = useState(null);
   const [editValue, setEditValue] = useState('');
   const [copied, setCopied] = useState(false);
@@ -36,68 +12,21 @@ export default function PromptBuilder() {
   const [hiddenFields, setHiddenFields] = useState(new Set());
   const [toast, setToast] = useState(null);
   const [hoverField, setHoverField] = useState(null);
-  const [savedItems, setSavedItems] = useState([]);
+  const [savedItems, setSavedItems] = useState(() => { try { const saved = localStorage.getItem('promptBuilderItems'); return saved ? JSON.parse(saved) : []; } catch (e) { return []; } });
   const [showSidebar, setShowSidebar] = useState(true);
+  const [editingItemName, setEditingItemName] = useState(null);
+  const [editingItemValue, setEditingItemValue] = useState('');
+  const [editingOutputField, setEditingOutputField] = useState(null);
+  const [editingOutputValue, setEditingOutputValue] = useState('');
 
-  const colors = {
-    taskContext: '#fef3c7',
-    toneContext: '#dbeafe',
-    backgroundData: '#dcfce7',
-    taskDescription: '#f3e8ff',
-    examples: '#fed7aa',
-    conversationHistory: '#fce7f3',
-    immediateTask: '#e0e7ff',
-    thinkingSteps: '#f0fdf4',
-    outputFormatting: '#faf5ff',
-    prefilledResponse: '#f5f3ff'
-  };
+  const colors = { taskContext: '#fef3c7', toneContext: '#dbeafe', backgroundData: '#dcfce7', taskDescription: '#f3e8ff', examples: '#fed7aa', conversationHistory: '#fce7f3', immediateTask: '#e0e7ff', thinkingSteps: '#f0fdf4', outputFormatting: '#faf5ff', prefilledResponse: '#f5f3ff' };
 
-  const handleInputChange = (field, value) => {
-    setInputs(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleCopyField = async (fieldKey) => {
-    await navigator.clipboard.writeText(inputs[fieldKey]);
-    setCopiedField(fieldKey);
-    setTimeout(() => setCopiedField(null), 2000);
-  };
-
-  const handleDeleteField = (fieldKey) => {
-    setDeletedFields(prev => {
-      const newSet = new Set(prev);
-      newSet.add(fieldKey);
-      return newSet;
-    });
-    setToast(fieldKey);
-    setTimeout(() => setToast(null), 10000);
-  };
-
-  const handleRestoreField = (fieldKey) => {
-    setDeletedFields(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(fieldKey);
-      return newSet;
-    });
-  };
-
-  const handleHideField = (fieldKey) => {
-    setHiddenFields(prev => {
-      const newSet = new Set(prev);
-      newSet.add(fieldKey);
-      return newSet;
-    });
-  };
-
-  const handleShowField = (fieldKey) => {
-    setHiddenFields(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(fieldKey);
-      return newSet;
-    });
-  };
+  const handleInputChange = (field, value) => setInputs(prev => ({ ...prev, [field]: value }));
+  const handleCopyField = async (fieldKey) => { await navigator.clipboard.writeText(inputs[fieldKey]); setCopiedField(fieldKey); setTimeout(() => setCopiedField(null), 2000); };
+  const handleDeleteField = (fieldKey) => { setDeletedFields(prev => { const newSet = new Set(prev); newSet.add(fieldKey); return newSet; }); setToast(fieldKey); setTimeout(() => setToast(null), 10000); };
+  const handleRestoreField = (fieldKey) => { setDeletedFields(prev => { const newSet = new Set(prev); newSet.delete(fieldKey); return newSet; }); };
+  const handleHideField = (fieldKey) => { setHiddenFields(prev => { const newSet = new Set(prev); newSet.add(fieldKey); return newSet; }); };
+  const handleShowField = (fieldKey) => { setHiddenFields(prev => { const newSet = new Set(prev); newSet.delete(fieldKey); return newSet; }); };
 
   const generatePrompt = () => {
     const sections = [
@@ -116,7 +45,7 @@ export default function PromptBuilder() {
   };
 
   const generateColoredPrompt = () => {
-    const sections = [
+    return [
       { key: 'taskContext', text: inputs.taskContext && !deletedFields.has('taskContext') && !hiddenFields.has('taskContext') && `${labels.taskContext}:\n${inputs.taskContext}` },
       { key: 'toneContext', text: inputs.toneContext && !deletedFields.has('toneContext') && !hiddenFields.has('toneContext') && `${labels.toneContext}:\n${inputs.toneContext}` },
       { key: 'backgroundData', text: inputs.backgroundData && !deletedFields.has('backgroundData') && !hiddenFields.has('backgroundData') && `${labels.backgroundData}:\n${inputs.backgroundData}` },
@@ -128,41 +57,17 @@ export default function PromptBuilder() {
       { key: 'outputFormatting', text: inputs.outputFormatting && !deletedFields.has('outputFormatting') && !hiddenFields.has('outputFormatting') && `${labels.outputFormatting}:\n${inputs.outputFormatting}` },
       { key: 'prefilledResponse', text: inputs.prefilledResponse && !deletedFields.has('prefilledResponse') && !hiddenFields.has('prefilledResponse') && `${labels.prefilledResponse}:\n${inputs.prefilledResponse}` }
     ].filter(s => s.text);
-    
-    return sections;
   };
 
-  const handleCopyOutput = async () => {
-    await navigator.clipboard.writeText(generatePrompt());
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleSavePrompt = () => {
-    const timestamp = new Date().toLocaleString();
-    const newSavedItem = {
-      id: Date.now(),
-      timestamp,
-      prompt: generatePrompt(),
-      inputs,
-      labels
-    };
-    setSavedItems(prev => [newSavedItem, ...prev]);
-  };
-
-  const handleLoadPrompt = (id) => {
-    const item = savedItems.find(i => i.id === id);
-    if (item) {
-      setInputs(item.inputs);
-      setLabels(item.labels);
-      setDeletedFields(new Set());
-      setHiddenFields(new Set());
-    }
-  };
-
-  const handleDeleteSavedItem = (id) => {
-    setSavedItems(prev => prev.filter(i => i.id !== id));
-  };
+  const handleCopyOutput = async () => { await navigator.clipboard.writeText(generatePrompt()); setCopied(true); setTimeout(() => setCopied(false), 2000); };
+  const handleSavePrompt = () => { const itemCount = savedItems.length + 1; const newItem = { id: Date.now(), name: `Untitled${itemCount}`, prompt: generatePrompt(), inputs, labels }; const updated = [newItem, ...savedItems]; setSavedItems(updated); try { localStorage.setItem('promptBuilderItems', JSON.stringify(updated)); } catch (e) {} };
+  const handleLoadPrompt = (id) => { const item = savedItems.find(i => i.id === id); if (item) { setInputs(item.inputs); setLabels(item.labels); setDeletedFields(new Set()); setHiddenFields(new Set()); } };
+  const handleDeleteSavedItem = (id) => { const updated = savedItems.filter(i => i.id !== id); setSavedItems(updated); try { localStorage.setItem('promptBuilderItems', JSON.stringify(updated)); } catch (e) {} };
+  const handleRenameSavedItem = (id, newName) => { const updated = savedItems.map(item => item.id === id ? { ...item, name: newName } : item); setSavedItems(updated); try { localStorage.setItem('promptBuilderItems', JSON.stringify(updated)); } catch (e) {} };
+  const handleExportItems = () => { const dataStr = JSON.stringify(savedItems, null, 2); const blob = new Blob([dataStr], { type: 'application/json' }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = `prompt-builder-${Date.now()}.json`; document.body.appendChild(link); link.click(); document.body.removeChild(link); setTimeout(() => URL.revokeObjectURL(url), 100); };
+  const handleImportItems = () => { const input = document.createElement('input'); input.type = 'file'; input.accept = '.json'; input.onchange = (e) => { const file = e.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (event) => { try { const imported = JSON.parse(event.target.result); const updated = [...imported, ...savedItems]; setSavedItems(updated); localStorage.setItem('promptBuilderItems', JSON.stringify(updated)); } catch (err) { alert('Error importing'); } }; reader.readAsText(file); } }; input.click(); };
+  const handleEditOutput = (fieldKey, text) => { setEditingOutputField(fieldKey); const lines = text.split('\n'); setEditingOutputValue(lines.slice(1).join('\n').trim()); };
+  const handleSaveOutputEdit = (fieldKey) => { handleInputChange(fieldKey, editingOutputValue); setEditingOutputField(null); };
 
   const inputFields = [
     { key: 'taskContext', placeholder: 'Describe the main task...' },
@@ -178,649 +83,155 @@ export default function PromptBuilder() {
   ];
 
   return (
-    <div style={{ display: 'flex', height: '100vh', backgroundColor: '#f9fafb' }}>
-      {showSidebar && (
-        <div style={{
-          width: '200px',
-          backgroundColor: '#ffffff',
-          borderRight: '1px solid #e5e7eb',
-          overflowY: 'auto',
-          padding: '16px',
-          display: 'flex',
-          flexDirection: 'column'
-        }}>
-          <h3 style={{
-            fontSize: '14px',
-            fontWeight: 'bold',
-            color: '#111827',
-            marginBottom: '12px',
-            marginTop: 0
-          }}>Saved Items</h3>
-          
-          <div style={{ flex: 1, overflowY: 'auto', marginBottom: '12px' }}>
-            {savedItems.length === 0 ? (
-              <p style={{
-                fontSize: '12px',
-                color: '#9ca3af',
-                textAlign: 'center',
-                marginTop: '16px'
-              }}>No saved items</p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {savedItems.map(item => (
-                  <div key={item.id} style={{
-                    backgroundColor: '#f3f4f6',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '6px',
-                    padding: '8px',
-                    fontSize: '11px',
-                    color: '#374151'
-                  }}>
-                    <div style={{ marginBottom: '6px' }}>
-                      <div style={{ fontWeight: '600', marginBottom: '2px' }}>{item.timestamp}</div>
-                      <div style={{ color: '#6b7280', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {item.prompt.substring(0, 30)}...
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '4px' }}>
-                      <button
-                        onClick={() => handleLoadPrompt(item.id)}
-                        style={{
-                          flex: 1,
-                          padding: '4px 6px',
-                          backgroundColor: '#3b82f6',
-                          color: '#ffffff',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '11px',
-                          fontWeight: '600'
-                        }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
-                      >
-                        Load
-                      </button>
-                      <button
-                        onClick={() => handleDeleteSavedItem(item.id)}
-                        style={{
-                          padding: '4px 6px',
-                          backgroundColor: '#fee2e2',
-                          color: '#dc2626',
-                          border: '1px solid #fecaca',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '11px',
-                          fontWeight: '600'
-                        }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#fecaca'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = '#fee2e2'}
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  </div>
-                ))}
+    <div className="flex flex-col h-screen bg-gray-50">
+      <div className="bg-white border-b border-gray-200 shadow-md px-6 py-4 flex items-center justify-between">
+        <div className="text-2xl font-bold text-blue-600">promptsav</div>
+        <a href="https://github.com/nafisadman/promptsav" target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-semibold">GitHub</a>
+      </div>
+
+      <div className="flex-1 flex overflow-hidden">
+        {showSidebar && (
+          <div className="w-72 bg-white border-r border-gray-200 overflow-y-auto shadow-xl">
+            <div className="p-6 sticky top-0 bg-white border-b border-gray-200">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Saved</h3>
+              <div className="flex gap-2">
+                <button onClick={handleExportItems} disabled={savedItems.length === 0} className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white text-sm font-semibold rounded-lg transition-colors">
+                  <Download size={16} /> Export
+                </button>
+                <button onClick={handleImportItems} className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg transition-colors">
+                  <Upload size={16} /> Import
+                </button>
               </div>
-            )}
+            </div>
+            <div className="p-4 space-y-3">
+              {savedItems.length === 0 && <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">No saved items</div>}
+              {savedItems.map(item => (
+                <div key={item.id} className="p-3 bg-gray-50 border border-gray-200 rounded-lg hover:shadow-lg transition-shadow">
+                  {editingItemName === item.id ? (
+                    <div className="flex gap-2 mb-2">
+                      <input type="text" value={editingItemValue} onChange={(e) => setEditingItemValue(e.target.value)} className="flex-1 px-2 py-1 border border-blue-500 rounded text-sm" autoFocus />
+                      <button onClick={() => { handleRenameSavedItem(item.id, editingItemValue); setEditingItemName(null); }} className="px-2 py-1 bg-emerald-600 text-white text-xs rounded font-semibold">OK</button>
+                    </div>
+                  ) : (
+                    <h3 onDoubleClick={() => { setEditingItemName(item.id); setEditingItemValue(item.name); }} className="font-bold text-gray-900 cursor-pointer hover:text-blue-600 mb-1">{item.name}</h3>
+                  )}
+                  <p className="text-xs text-gray-600 truncate mb-2">{item.prompt.substring(0, 50)}...</p>
+                  <div className="flex gap-2">
+                    <button onClick={() => handleLoadPrompt(item.id)} className="flex-1 px-2 py-1 bg-blue-600 text-white text-xs rounded font-semibold">Load</button>
+                    <button onClick={() => handleDeleteSavedItem(item.id)} className="px-2 py-1 bg-red-100 text-red-600 text-xs rounded font-semibold">X</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="p-4 border-t border-gray-200">
+              <button onClick={() => setShowSidebar(false)} className="w-full px-3 py-2 bg-gray-200 text-gray-700 text-sm font-semibold rounded-lg">Hide</button>
+            </div>
           </div>
+        )}
 
-          <button
-            onClick={() => setShowSidebar(false)}
-            style={{
-              padding: '6px 8px',
-              backgroundColor: '#f3f4f6',
-              color: '#6b7280',
-              border: '1px solid #d1d5db',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '12px',
-              fontWeight: '600'
-            }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#e5e7eb'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#f3f4f6'}
-          >
-            Hide
-          </button>
-        </div>
-      )}
+        {!showSidebar && (
+          <button onClick={() => setShowSidebar(true)} className="fixed left-4 top-20 z-50 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg shadow-lg">Show</button>
+        )}
 
-      {!showSidebar && (
-        <button
-          onClick={() => setShowSidebar(true)}
-          style={{
-            position: 'fixed',
-            left: '16px',
-            top: '16px',
-            padding: '8px 12px',
-            backgroundColor: '#3b82f6',
-            color: '#ffffff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '12px',
-            fontWeight: '600',
-            zIndex: 1000
-          }}
-          onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
-          onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
-        >
-          ☰ Show
-        </button>
-      )}
-
-      <div style={{ display: 'flex', flex: 1 }}>
-        <div style={{
-          flex: 1,
-          overflowY: 'auto',
-          padding: '32px',
-          backgroundColor: '#ffffff',
-          borderRight: '1px solid #e5e7eb'
-        }}>
-          <h1 style={{
-            fontSize: '30px',
-            fontWeight: 'bold',
-            marginBottom: '32px',
-            color: '#111827'
-          }}>Prompt Structure</h1>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '20px' }}>
-            {inputFields.map(field => {
-              const isDeleted = deletedFields.has(field.key);
-              const isHidden = hiddenFields.has(field.key);
-              
-              if (isHidden) {
+        <div className="flex-1 flex gap-4 p-4 overflow-hidden">
+          <div className="flex-1 bg-white rounded-xl shadow-lg border border-gray-200 flex flex-col overflow-hidden">
+            <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+              <h1 className="text-2xl font-bold text-gray-900">Input</h1>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {inputFields.map(field => {
+                const isDeleted = deletedFields.has(field.key);
+                const isHidden = hiddenFields.has(field.key);
+                if (isDeleted) return null;
                 return (
-                  <div key={field.key} style={{
-                    padding: '12px',
-                    backgroundColor: '#fef3c7',
-                    border: '1px solid #fcd34d',
-                    borderRadius: '8px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}>
-                    <span style={{ color: '#92400e', fontSize: '14px', fontWeight: '600' }}>
-                      {labels[field.key]} (Hidden)
-                    </span>
-                    <button
-                      onClick={() => handleShowField(field.key)}
-                      style={{
-                        padding: '6px 6px',
-                        backgroundColor: '#f3f4f6',
-                        color: '#6b7280',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '12px',
-                        fontWeight: '600',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = '#e5e7eb';
-                        e.target.style.color = '#374151';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = '#f3f4f6';
-                        e.target.style.color = '#6b7280';
-                      }}
-                    >
-                      <Eye size={16} />
-                    </button>
+                  <div key={field.key} onMouseEnter={() => setHoverField(field.key)} onMouseLeave={() => setHoverField(null)} className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      {editingLabel === field.key ? (
+                        <div className="flex gap-2 flex-1">
+                          <input type="text" value={editValue} onChange={(e) => setEditValue(e.target.value)} className="flex-1 px-3 py-1 border border-blue-500 rounded text-sm" autoFocus />
+                          <button onClick={() => { setLabels(prev => ({ ...prev, [field.key]: editValue })); setEditingLabel(null); }} className="px-3 py-1 bg-emerald-600 text-white text-xs rounded font-semibold">Save</button>
+                          <button onClick={() => setEditingLabel(null)} className="px-3 py-1 bg-red-600 text-white text-xs rounded font-semibold">Cancel</button>
+                        </div>
+                      ) : (
+                        <>
+                          <label onDoubleClick={() => { setEditingLabel(field.key); setEditValue(labels[field.key]); }} className={`text-sm font-semibold cursor-pointer ${isHidden ? 'text-gray-400' : 'text-gray-900'}`}>{labels[field.key]}</label>
+                          {!isHidden && (
+                            <div className={`flex gap-1 transition-opacity ${hoverField === field.key ? 'opacity-100' : 'opacity-0'}`}>
+                              <button onClick={() => handleCopyField(field.key)} disabled={!inputs[field.key]} className="p-1 hover:bg-gray-100 rounded" title="Copy">
+                                {copiedField === field.key ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
+                              </button>
+                              <button onClick={() => handleHideField(field.key)} className="p-1 hover:bg-gray-100 rounded" title="Hide">
+                                <EyeOff size={14} />
+                              </button>
+                              <button onClick={() => handleDeleteField(field.key)} className="p-1 hover:bg-red-50 rounded" title="Delete">
+                                <Trash2 size={14} className="text-red-600" />
+                              </button>
+                            </div>
+                          )}
+                          {isHidden && (
+                            <button onClick={() => handleShowField(field.key)} className="p-1 hover:bg-gray-100 rounded">
+                              <Eye size={14} />
+                            </button>
+                          )}
+                        </>
+                      )}
+                    </div>
+                    <textarea disabled={isHidden} value={inputs[field.key]} onChange={(e) => { handleInputChange(field.key, e.target.value); e.target.style.height = 'auto'; e.target.style.height = Math.min(e.target.scrollHeight, 300) + 'px'; }} placeholder={field.placeholder} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" style={{ backgroundColor: colors[field.key], opacity: isHidden ? 0.5 : 1, cursor: isHidden ? 'not-allowed' : 'auto', minHeight: '40px', maxHeight: '300px', overflow: 'hidden' }} rows="1" />
                   </div>
                 );
-              }
-
-              if (isDeleted) {
-                return null;
-              }
-
-              return (
-                <div 
-                  key={field.key}
-                  onMouseEnter={() => setHoverField(field.key)}
-                  onMouseLeave={() => setHoverField(null)}
-                >
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '8px'
-                  }}>
-                    {editingLabel === field.key ? (
-                      <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
-                        <input
-                          type="text"
-                          value={editValue}
-                          onChange={(e) => setEditValue(e.target.value)}
-                          style={{
-                            padding: '6px 12px',
-                            border: '1px solid #3b82f6',
-                            borderRadius: '6px',
-                            fontSize: '14px',
-                            flex: 1,
-                            boxSizing: 'border-box'
-                          }}
-                          autoFocus
-                        />
-                        <button
-                          onClick={() => {
-                            setLabels(prev => ({ ...prev, [field.key]: editValue }));
-                            setEditingLabel(null);
-                          }}
-                          style={{
-                            padding: '6px 12px',
-                            backgroundColor: '#10b981',
-                            color: '#ffffff',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontSize: '12px',
-                            fontWeight: '600'
-                          }}
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={() => setEditingLabel(null)}
-                          style={{
-                            padding: '6px 12px',
-                            backgroundColor: '#ef4444',
-                            color: '#ffffff',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontSize: '12px',
-                            fontWeight: '600'
-                          }}
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <label 
-                          onDoubleClick={() => {
-                            setEditingLabel(field.key);
-                            setEditValue(labels[field.key]);
-                          }}
-                          style={{
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            color: '#374151',
-                            cursor: 'pointer',
-                            userSelect: 'none'
-                          }}
-                        >
-                          {labels[field.key]}
-                        </label>
-                        <div style={{ display: 'flex', gap: '6px', visibility: hoverField === field.key ? 'visible' : 'hidden' }}>
-                          <button
-                            onClick={() => handleCopyField(field.key)}
-                            disabled={!inputs[field.key]}
-                            title="Copy"
-                            style={{
-                              padding: '6px 6px',
-                              backgroundColor: copiedField === field.key ? '#10b981' : '#f3f4f6',
-                              color: copiedField === field.key ? '#ffffff' : '#6b7280',
-                              border: '1px solid #d1d5db',
-                              borderRadius: '4px',
-                              cursor: inputs[field.key] ? 'pointer' : 'not-allowed',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center'
-                            }}
-                            onMouseEnter={(e) => {
-                              if (inputs[field.key]) {
-                                e.target.style.backgroundColor = '#e5e7eb';
-                              }
-                            }}
-                            onMouseLeave={(e) => {
-                              if (inputs[field.key] && copiedField !== field.key) {
-                                e.target.style.backgroundColor = '#f3f4f6';
-                              }
-                            }}
-                          >
-                            {copiedField === field.key ? <Check size={16} /> : <Copy size={16} />}
-                          </button>
-                          <button
-                            onClick={() => handleHideField(field.key)}
-                            title="Hide"
-                            style={{
-                              padding: '6px 6px',
-                              backgroundColor: '#f3f4f6',
-                              color: '#6b7280',
-                              border: '1px solid #d1d5db',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.target.style.backgroundColor = '#e5e7eb';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.target.style.backgroundColor = '#f3f4f6';
-                            }}
-                          >
-                            <EyeOff size={16} />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteField(field.key)}
-                            title="Delete"
-                            style={{
-                              padding: '6px 6px',
-                              backgroundColor: '#f3f4f6',
-                              color: '#dc2626',
-                              border: '1px solid #fecaca',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.target.style.backgroundColor = '#fee2e2';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.target.style.backgroundColor = '#f3f4f6';
-                            }}
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                    <textarea
-                    value={inputs[field.key]}
-                    onChange={(e) => {
-                      handleInputChange(field.key, e.target.value);
-                      e.target.style.height = 'auto';
-                      const newHeight = Math.min(e.target.scrollHeight, 250);
-                      e.target.style.height = newHeight + 'px';
-                    }}
-                    placeholder={field.placeholder}
-                    style={{
-                      width: '100%',
-                      padding: '12px 16px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      fontFamily: 'system-ui',
-                      resize: 'none',
-                      boxSizing: 'border-box',
-                      outline: 'none',
-                      minHeight: '24px',
-                      maxHeight: '250px',
-                      overflow: 'hidden',
-                      lineHeight: '1.5',
-                      backgroundColor: colors[field.key]
-                    }}
-                    rows="1"
-                    onFocus={(e) => e.target.style.outline = '2px solid #3b82f6'}
-                    onBlur={(e) => e.target.style.outline = 'none'}
-                  />
-                </div>
-              );
-            })}
-          </div>
-
-          <button
-            onClick={handleSavePrompt}
-            style={{
-              width: '100%',
-              padding: '10px 16px',
-              backgroundColor: '#10b981',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '600'
-            }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#059669'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#10b981'}
-          >
-            Save
-          </button>
-        </div>
-
-        <div style={{
-          flex: 1,
-          padding: '32px',
-          background: 'linear-gradient(to bottom right, #eff6ff, #e0e7ff)',
-          display: 'flex',
-          flexDirection: 'column'
-        }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '24px'
-          }}>
-            <h2 style={{
-              fontSize: '24px',
-              fontWeight: 'bold',
-              color: '#111827'
-            }}>Output Prompt</h2>
-            <button
-              onClick={handleCopyOutput}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '8px 16px',
-                backgroundColor: copied ? '#10b981' : '#2563eb',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: '500',
-                fontSize: '14px'
-              }}
-              onMouseEnter={(e) => !copied && (e.target.style.backgroundColor = '#1d4ed8')}
-              onMouseLeave={(e) => !copied && (e.target.style.backgroundColor = '#2563eb')}
-            >
-              {copied ? (
-                <>
-                  <Check size={18} />
-                  Copied!
-                </>
-              ) : (
-                <>
-                  <Copy size={18} />
-                  Copy
-                </>
-              )}
-            </button>
-          </div>
-
-          <div style={{
-            flex: 1,
-            backgroundColor: '#ffffff',
-            borderRadius: '8px',
-            padding: '24px',
-            overflowY: 'auto',
-            border: '1px solid #e5e7eb',
-            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-            marginBottom: '16px'
-          }}>
-            <div style={{
-              fontSize: '14px',
-              color: '#1f2937',
-              fontFamily: 'monospace',
-              lineHeight: '1.5',
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word'
-            }}>
-              {generateColoredPrompt().length === 0 ? (
-                'Your prompt will appear here...'
-              ) : (
-                generateColoredPrompt().map((section, idx) => (
-                  <div key={idx} style={{ backgroundColor: colors[section.key], padding: '4px 0' }}>
-                    {section.text}
-                  </div>
-                ))
-              )}
+              })}
+            </div>
+            <div className="p-4 border-t border-gray-200 bg-gray-50">
+              <button onClick={handleSavePrompt} className="w-full px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg">Save</button>
             </div>
           </div>
 
-          <div style={{
-            display: 'flex',
-            gap: '8px',
-            justifyContent: 'center'
-          }}>
-            <a
-              href={`https://chatgpt.com/?q=${encodeURIComponent(generatePrompt())}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#10a37f',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '13px',
-                fontWeight: '600',
-                textDecoration: 'none',
-                transition: 'background-color 0.2s'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#0d8f6e'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = '#10a37f'}
-            >
-              ChatGPT
-            </a>
-            <a
-              href={`https://gemini.google.com/?q=${encodeURIComponent(generatePrompt())}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#4285f4',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '13px',
-                fontWeight: '600',
-                textDecoration: 'none',
-                transition: 'background-color 0.2s'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#1f67db'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = '#4285f4'}
-            >
-              Gemini
-            </a>
-            <a
-              href={`https://claude.ai/?q=${encodeURIComponent(generatePrompt())}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#9333ea',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '13px',
-                fontWeight: '600',
-                textDecoration: 'none',
-                transition: 'background-color 0.2s'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#7e22ce'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = '#9333ea'}
-            >
-              Claude
-            </a>
-            <a
-              href={`https://grok.x.com/?q=${encodeURIComponent(generatePrompt())}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#000000',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '13px',
-                fontWeight: '600',
-                textDecoration: 'none',
-                transition: 'background-color 0.2s'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#333333'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = '#000000'}
-            >
-              Grok
-            </a>
+          <div className="flex-1 bg-white rounded-xl shadow-lg border border-gray-200 flex flex-col overflow-hidden">
+            <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50 flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">Output</h2>
+              <button onClick={handleCopyOutput} className="flex items-center gap-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-sm">
+                {copied ? (<><Check size={16} /> Copied!</>) : (<><Copy size={16} /> Copy</>)}
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+              {generateColoredPrompt().length === 0 ? (
+                <div className="h-full flex items-center justify-center p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">Your prompt will appear here...</div>
+              ) : (
+                generateColoredPrompt().map((section, idx) => {
+                  const isEditing = editingOutputField === section.key;
+                  return (
+                    <div key={idx} onClick={() => handleEditOutput(section.key, section.text)} className={`p-3 rounded-lg cursor-pointer transition-all text-sm ${isEditing ? 'ring-2 ring-blue-500 shadow-lg' : 'hover:shadow-md'}`} style={{ backgroundColor: colors[section.key] }}>
+                      {isEditing ? (
+                        <div className="space-y-2">
+                          <textarea value={editingOutputValue} onChange={(e) => setEditingOutputValue(e.target.value)} className="w-full px-2 py-1 border border-blue-400 rounded text-xs font-mono focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none" style={{ minHeight: '100px' }} autoFocus />
+                          <div className="flex gap-2">
+                            <button onClick={(e) => { e.stopPropagation(); handleSaveOutputEdit(section.key); }} className="flex-1 px-2 py-1 bg-emerald-600 text-white text-xs rounded font-semibold">Save</button>
+                            <button onClick={(e) => { e.stopPropagation(); setEditingOutputField(null); }} className="flex-1 px-2 py-1 bg-red-600 text-white text-xs rounded font-semibold">Cancel</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-gray-800 font-mono whitespace-pre-wrap break-words">{section.text}</p>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+            <div className="p-4 border-t border-gray-200 bg-gray-50 flex gap-2 justify-center flex-wrap">
+              <a href={`https://chatgpt.com/?q=${encodeURIComponent(generatePrompt())}`} target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded-lg font-semibold">ChatGPT</a>
+              <a href={`https://gemini.google.com/?q=${encodeURIComponent(generatePrompt())}`} target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs rounded-lg font-semibold">Gemini</a>
+              <a href={`https://claude.ai/?q=${encodeURIComponent(generatePrompt())}`} target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-xs rounded-lg font-semibold">Claude</a>
+              <a href={`https://grok.x.com/?q=${encodeURIComponent(generatePrompt())}`} target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-black hover:bg-gray-800 text-white text-xs rounded-lg font-semibold">Grok</a>
+            </div>
           </div>
         </div>
       </div>
 
       {toast && (
-        <div style={{
-          position: 'fixed',
-          bottom: '24px',
-          right: '24px',
-          backgroundColor: '#ffffff',
-          border: '1px solid #e5e7eb',
-          borderRadius: '8px',
-          padding: '16px',
-          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-          display: 'flex',
-          gap: '12px',
-          alignItems: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            flex: 1,
-            fontSize: '14px',
-            color: '#374151',
-            fontWeight: '500'
-          }}>
-            {labels[toast]} deleted
-          </div>
-          <button
-            onClick={() => {
-              handleRestoreField(toast);
-              setToast(null);
-            }}
-            style={{
-              padding: '6px 12px',
-              backgroundColor: '#3b82f6',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '12px',
-              fontWeight: '600'
-            }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
-          >
-            Restore
-          </button>
-          <button
-            onClick={() => setToast(null)}
-            style={{
-              padding: '6px 8px',
-              backgroundColor: '#f3f4f6',
-              color: '#6b7280',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '14px'
-            }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#e5e7eb'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#f3f4f6'}
-          >
-            ✕
-          </button>
+        <div className="fixed bottom-6 right-6 bg-white rounded-lg shadow-xl border border-gray-200 p-4 flex items-center gap-4 z-50 max-w-sm">
+          <span className="text-sm font-medium text-gray-900">{labels[toast]} deleted</span>
+          <button onClick={() => { handleRestoreField(toast); setToast(null); }} className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded font-semibold whitespace-nowrap">Restore</button>
+          <button onClick={() => setToast(null)} className="text-gray-500 hover:text-gray-700 text-lg">X</button>
         </div>
       )}
     </div>
