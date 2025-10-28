@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/PromptSaver/static/css/main.92c8d4eb.css",
-    "main.js": "/PromptSaver/static/js/main.c4a86ea5.js",
-    "static/js/453.042f6385.chunk.js": "/PromptSaver/static/js/453.042f6385.chunk.js",
-    "index.html": "/PromptSaver/index.html",
-    "main.92c8d4eb.css.map": "/PromptSaver/static/css/main.92c8d4eb.css.map",
-    "main.c4a86ea5.js.map": "/PromptSaver/static/js/main.c4a86ea5.js.map",
-    "453.042f6385.chunk.js.map": "/PromptSaver/static/js/453.042f6385.chunk.js.map"
+    "main.css": "/promptsav/static/css/main.e6c13ad2.css",
+    "main.js": "/promptsav/static/js/main.2d501a5f.js",
+    "static/js/453.042f6385.chunk.js": "/promptsav/static/js/453.042f6385.chunk.js",
+    "index.html": "/promptsav/index.html",
+    "main.e6c13ad2.css.map": "/promptsav/static/css/main.e6c13ad2.css.map",
+    "main.2d501a5f.js.map": "/promptsav/static/js/main.2d501a5f.js.map",
+    "453.042f6385.chunk.js.map": "/promptsav/static/js/453.042f6385.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.92c8d4eb.css",
-    "static/js/main.c4a86ea5.js"
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.2d501a5f.js"
   ]
 }
